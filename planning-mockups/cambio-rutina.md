@@ -1,0 +1,23 @@
+Actualiza esta Routine ("Planning semanal") con update_trigger y la memoria de Notion. Cambios pedidos por Ignacio el 6/11: el texto en Slack es una pared difícil de procesar; el formato principal pasa a ser una página.
+
+A) Sustituye el párrafo final "Salida (orden): …" por estos dos pasos:
+
+7. 📄 PÁGINA "PLANNING SEMANAL" (formato principal)
+   URL: https://claude.ai/artifact/52Rfuxx1bRwWbZYrmVRZkH (privada de Ignacio; no la compartas). NO republiques ni toques su HTML: solo escribe datos con la herramienta ArtifactData (cárgala con ToolSearch "select:ArtifactData"). La página lee la colección "semanas" y muestra la más reciente, con selector de semanas anteriores.
+   - Antes de escribir, lee el ejemplo: ArtifactData action "get", collection "semanas", doc_id "2026-W45" (out_dir al scratchpad). Respeta exactamente su esquema.
+   - Genera el JSON con un script de Python y guárdalo con action "set", collection "semanas", doc_id = semana ISO del lunes ("AAAA-Www", p. ej. "2026-W46"), usando file_path. Si ese doc ya existe (re-ejecución), haz "get" y pasa if_version. Nunca borres semanas anteriores ni toques la colección "checks" (son las casillas que marca Ignacio).
+   - Esquema: semana, rango ("9–13 nov 2026"), generado (fecha y hora Madrid), slack (permalink del mensaje del paso 8; añádelo con "update" después de publicar), titulo (titular de la semana en ≤10 palabras), resumen (1 frase con el recuento de estados), focus (2–3 tarjetas {s,l,t,p,tags}: lo que de verdad importa), prioridades [{id, area:"New Games"|"CTR"|"Personal", s, t, ev, nx, src?}], q4 {pct: % de Q4 transcurrido, semanasRestantes}, goals [{id,s,t,w,src?}], tareas {alta, media, baja: [{id:"wNN-a1"…, t, tags:[P/G], src?}]}, seguimientos [{n,w}], vigilar [texto], fuentes [{n,s,nota?}], agenda [{d:"Lun 9", today?, e:[{h,t,key?}]}], campanas [{id,name,type,goal,week,chan,since,dash|null,kpis:[{k,v,tg,st}],read,next,charts}].
+   - Estados (s / st): "g" avanza/en camino/ok · "y" sin movimiento/en riesgo · "r" bloqueada/fuera de camino · "d" cerrada/cumplido · "n" sin novedades/neutro · "p" (solo KPIs) pendiente de datos. src = URL https de la fuente (Slack, Granola, doc) cuando la tengas. Textos cortos: ev y nx ≤ 120 caracteres; tareas ≤ 140.
+   - charts (máx. 2 por juego): {kind:"line"|"bars", title, unit:"%"|"$"|"", x:[etiquetas], series:[{name, vals:[números o null]}], yMin?, yMax?, target?:{y,label,x?}, band?:{lo,hi,label}, mark?:índice, markLabel?}. Test D7 → retención D1–D7 (target {x:6,y:20}) y ROAS acumulado D0–D7 (band 18–30). Test D1 → Ret D1 por cohorte (target {y:40}) e instalaciones o CPI por día y país. Release CTR → IAP/revenue diario con mark en el día de la release.
+   - Las series salen SOLO de Amplitude (get_amplitude_charts con include "data" sobre los charts del dashboard del juego). Nunca inventes ni extrapoles: null para días sin datos y charts: [] si no hay datos. No uses el campo "ilustrativo" (solo existe en el ejemplo W45).
+
+8. SLACK: publica en #nacho-planning (channel_id C0CC678TV8R) UN mensaje corto (≤ 900 caracteres), sin hilo: "📋 Planning semanal · <rango>", el titular, 3–5 bullets con lo urgente (estado + siguiente paso), una línea con los tests (nombre + semáforo), el enlace https://claude.ai/artifact/52Rfuxx1bRwWbZYrmVRZkH#<doc_id> y "¿Falta algo o hay contexto extra?". Las fuentes que fallen van en la página y en una línea del mensaje. Si falla la escritura en la página, publica el plan completo en Slack con el formato antiguo (mensaje principal + hilo) y dilo.
+   Aquí: resume en una línea y deja los dos enlaces (página y Slack). Si Ignacio responde con correcciones, añádelas como nuevas reglas de calidad en esta Routine y en la memoria de Notion.
+
+B) En el paso 2a (privacidad de Granola), permite también la página privada: "el contenido de Granola solo va al plan en #nacho-planning y a la página privada del planning (paso 7)".
+
+C) Añade la regla de calidad 1e: "Enlaces: construye los permalinks de Slack con el ts exacto del mensaje; si no lo tienes, enlaza al canal en vez de inventar uno. No incluyas puntos que no hayas verificado esta semana; si arrastras uno de la semana anterior, márcalo 'sin verificar'." (Errores del 2/11: enlace roto al DM con Diana y el punto CTRO→Unity sin verificar.)
+
+D) En el paso 6, añade los dashboards conocidos: Box Out https://app.amplitude.com/analytics/zeptolab/dashboard/yp041clk · Bus Colony Jam https://app.amplitude.com/analytics/zeptolab/dashboard/tgbgtuuj. Tests en seguimiento: Box Out D7 (29/10), Bus Colony Jam D1 (29/10), Candy Trail (30/10), CTR 4.3.0 (26/10).
+
+Confírmame en una línea cuando la Routine esté actualizada.
